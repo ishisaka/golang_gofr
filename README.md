@@ -9,3 +9,9 @@ gofrの学習
 ## gofr GitHub
 
 [gofr\-dev/gofr: An opinionated GoLang framework for accelerated microservice development\. Built in support for databases and observability\.](https://github.com/gofr-dev/gofr)
+
+## ディレクトリ構成
+
+### simple
+
+シンプルなWEBサービスの例。
