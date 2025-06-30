@@ -5,6 +5,7 @@ redis-up:
 .PHONY: redis-down
 redis-down:
 	docker stop gofr-redis
+	docker rm -f gofr-redis
 
 .PHONY: run
 run:
@@ -25,3 +26,7 @@ up:
 .PHONY: down
 down:
 	docker compose down
+
+.PHONY: compose-clear
+compose-clear:
+	docker compose down --rmi all
