@@ -1,6 +1,6 @@
 # redis
 
-gofrでRedisにアクセする場合のサンプル。
+gofrでRedisにアクセスする場合のサンプル。
 
 ## 実行方法
 
