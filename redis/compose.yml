@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: gofr-app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    networks:
+      - gofr-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.2
+    container_name: gofr-redis
+    ports:
+      - "2002:6379"
+    networks:
+      - gofr-network
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+networks:
+  gofr-network:
+    driver: bridge
+
+volumes:
+  redis-data:
