@@ -71,6 +71,10 @@ func main() {
 			customers = append(customers, customer)
 		}
 
+		if err := rows.Err(); err != nil {
+			return nil, err
+		}
+
 		if len(customers) > 1 {
 			// 2件以上取得できた場合は500エラー
 			return nil, errors.New("multiple customers found")
@@ -100,6 +104,10 @@ func getCustomer(ctx *gofr.Context) ([]Customer, error) {
 		}
 
 		customers = append(customers, customer)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 
 	// return the customer
