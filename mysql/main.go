@@ -16,6 +16,7 @@ import (
 	"errors"
 
 	"gofr.dev/pkg/gofr"
+	"gofr.dev/pkg/gofr/http"
 )
 
 type Customer struct {
@@ -37,24 +38,18 @@ func main() {
 	})
 
 	app.GET("/customer", func(ctx *gofr.Context) (any, error) {
-		var customers []Customer
-
-		// SQLを使ってDBからデータを取得する
-		rows, err := ctx.SQL.QueryContext(ctx, "SELECT * FROM customers")
-		if err != nil {
-			return nil, err
+		customers, err2 := getCustomer(ctx)
+		if err2 != nil {
+			return nil, err2
 		}
+		return customers, nil
+	})
 
-		for rows.Next() {
-			var customer Customer
-			if err := rows.Scan(&customer.ID, &customer.Name); err != nil {
-				return nil, err
-			}
-
-			customers = append(customers, customer)
+	app.GET("/customer/", func(ctx *gofr.Context) (any, error) {
+		customers, err2 := getCustomer(ctx)
+		if err2 != nil {
+			return nil, err2
 		}
-
-		// return the customer
 		return customers, nil
 	})
 
@@ -75,12 +70,38 @@ func main() {
 
 			customers = append(customers, customer)
 		}
-		// 2件以上取得できた場合はエラー
+
 		if len(customers) > 1 {
+			// 2件以上取得できた場合は500エラー
 			return nil, errors.New("multiple customers found")
+		} else if len(customers) == 0 {
+			// 指定されたidが見つからなかったら404を返す
+			return nil, http.ErrorEntityNotFound{Name: "id", Value: ctx.PathParam("id")}
 		}
 		return customers[0], nil
 	})
 
 	app.Run()
+}
+
+func getCustomer(ctx *gofr.Context) ([]Customer, error) {
+	var customers []Customer
+
+	// SQLを使ってDBからデータを取得する
+	rows, err := ctx.SQL.QueryContext(ctx, "SELECT * FROM customers")
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var customer Customer
+		if err := rows.Scan(&customer.ID, &customer.Name); err != nil {
+			return nil, err
+		}
+
+		customers = append(customers, customer)
+	}
+
+	// return the customer
+	return customers, nil
 }
